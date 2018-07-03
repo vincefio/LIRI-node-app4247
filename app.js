@@ -5,19 +5,30 @@ const keys = require('./keys.js')
 var request = require('request')
 //require twitter package
 var Twitter = require('twitter');
-
+var client = new Twitter(keys.twitterKeys);
 
 var command = process.argv[2]
+var value = process.argv[3]
 
 switch(command){
   case `my-tweets`:
     console.log('tweet bird')
+    twitterShowCase()
     break;
   case `spotify-this-song`:
     console.log('spotify fool')
     break;
   case `movie-this`:
-    console.log('this is movie info')
+    //console.log('value is ' + value)
+    if(value == null){
+      //console.log('val is null')
+      value = 'Mr. Nobody'
+      OMBDRequest()
+    }
+    else{
+      OMBDRequest()
+    }
+    //console.log('this is movie info')
     break;
   case `do-what-it-says`:
     console.log('DO WHAT I SAY!!!')
@@ -32,28 +43,32 @@ switch(command){
   console.log('body:', body); // Print the HTML for the Google homepage.
 });*/
 
-var client = new Twitter(keys.twitterKeys);
+
 //40e9cece
 //http://www.omdbapi.com/?apikey=40e9cece&t=titanic
 //var params = {screen_name: 'crimshawrocks'};
-client.get('http://www.omdbapi.com/?apikey=40e9cece&t=titanic', function(error, tweets, response) {
-  if (!error) {
-    console.log(tweets);
-  }
-});
-
-
-
-var params = {
-  screen_name: "crimshawrocks"
-};
-client.get("statuses/user_timeline", params, function(error, tweets, response) {
-  if (!error) {
-  for (var i = 0; i < tweets.length; i++) {
-      console.log(tweets[i].created_at);
-      console.log("");
-      console.log(tweets[i].text);
+function OMBDRequest(){
+  request('http://www.omdbapi.com/?apikey=40e9cece&t=' + value, function(error, tweets, response) {
+    if (!error) {
+      console.log(JSON.parse(tweets.body));
     }
-    //console.log('response ' + tweets.length)//JSON.stringify(tweets))
-  }
-});
+  });
+}
+
+
+
+function twitterShowCase(){
+  var params = {
+    screen_name: "crimshawrocks"
+  };
+  client.get("statuses/user_timeline", params, function(error, tweets, response) {
+    if (!error) {
+    for (var i = 0; i < tweets.length; i++) {
+        console.log(tweets[i].created_at);
+        console.log("");
+        console.log(tweets[i].text);
+      }
+      //console.log('response ' + tweets.length)//JSON.stringify(tweets))
+    }
+  });
+}
