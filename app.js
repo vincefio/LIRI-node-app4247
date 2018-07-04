@@ -5,6 +5,7 @@ const keys = require('./keys.js')
 var request = require('request')
 //require twitter package
 var Twitter = require('twitter');
+var Spotify = require('node-spotify-api');
 var client = new Twitter(keys.twitterKeys);
 
 var command = process.argv[2]
@@ -42,6 +43,20 @@ switch(command){
   console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
   console.log('body:', body); // Print the HTML for the Google homepage.
 });*/
+
+
+var spotify = new Spotify({
+  id: 'accb9c432d494df48d2e66f5b6f6637f',
+  secret: 'cb9bc119442042e6a422749abb04f682'
+});
+
+spotify.search({ type: 'track', query: 'All the Small Things', limit: 1 }, function(err, data) {
+  if (err) {
+    return console.log('Error occurred: ' + err);
+  }
+
+console.log(data.tracks.items[0].artists);
+});
 
 
 //40e9cece
