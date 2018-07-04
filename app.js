@@ -1,6 +1,6 @@
 const keys = require('./keys.js')
 //console.log('keys ' + JSON.stringify(keys.twitterKeys, null, 2))
-
+var fs = require('fs')
 //require request package
 var request = require('request')
 //require twitter package
@@ -11,30 +11,37 @@ var client = new Twitter(keys.twitterKeys);
 var command = process.argv[2]
 var value = process.argv[3]
 
-switch(command){
-  case `my-tweets`:
-    console.log('tweet bird')
-    twitterShowCase()
-    break;
-  case `spotify-this-song`:
-    console.log('spotify fool')
-    break;
-  case `movie-this`:
-    //console.log('value is ' + value)
-    if(value == null){
-      //console.log('val is null')
-      value = 'Mr. Nobody'
-      OMBDRequest()
-    }
-    else{
-      OMBDRequest()
-    }
-    //console.log('this is movie info')
-    break;
-  case `do-what-it-says`:
-    console.log('DO WHAT I SAY!!!')
-    break;
+mainSwitch()
+
+function mainSwitch(){
+  switch(command){
+    case `my-tweets`:
+      console.log('tweet bird')
+      twitterShowCase()
+      break;
+    case `spotify-this-song`:
+      spotifyRequest()
+      //console.log('spotify fool')
+      break;
+    case `movie-this`:
+      //console.log('value is ' + value)
+      if(value == null){
+        //console.log('val is null')
+        value = 'Mr. Nobody'
+        OMBDRequest()
+      }
+      else{
+        OMBDRequest()
+      }
+      //console.log('this is movie info')
+      break;
+    case `do-what-it-says`:
+      doWhatItSays()
+      console.log('DO WHAT I SAY!!!')
+      break;
+  }
 }
+
 
 
 //query twitter api with request
@@ -44,19 +51,24 @@ switch(command){
   console.log('body:', body); // Print the HTML for the Google homepage.
 });*/
 
-
-var spotify = new Spotify({
-  id: 'accb9c432d494df48d2e66f5b6f6637f',
-  secret: 'cb9bc119442042e6a422749abb04f682'
-});
-
-spotify.search({ type: 'track', query: 'All the Small Things', limit: 1 }, function(err, data) {
-  if (err) {
-    return console.log('Error occurred: ' + err);
+function spotifyRequest(){
+  if(value == null){
+    value = "All The Small Things"
   }
+  var spotify = new Spotify({
+    id: 'accb9c432d494df48d2e66f5b6f6637f',
+    secret: 'cb9bc119442042e6a422749abb04f682'
+  });
 
-console.log(data.tracks.items[0].artists);
-});
+  spotify.search({ type: 'track', query: value, limit: 1 }, function(err, data) {
+    if (err) {
+      return console.log('Error occurred: ' + err);
+    }
+
+  console.log(data.tracks.items[0].artists);
+  });
+}
+
 
 
 //40e9cece
@@ -86,4 +98,28 @@ function twitterShowCase(){
       //console.log('response ' + tweets.length)//JSON.stringify(tweets))
     }
   });
+}
+
+function doWhatItSays(){
+  fs.readFile("random.txt", 'utf8', function(error, data){
+    // If the code experiences any errors it will log the error to the console.
+  if (error) {
+    return console.log(error);
+  }
+
+  // We will then print the contents of data
+  console.log(data);
+
+  // Then split it by commas (to make it more readable)
+  var dataArr = data.split(",");
+
+  // We will then re-display the content as an array for later use.
+  console.log(dataArr);
+
+  command = dataArr[0]
+  value = dataArr[1]
+
+  mainSwitch()
+
+  })
 }
